@@ -72,7 +72,7 @@ public class Agencia {
         System.out.print("Digite o ID da porta: ");
         try {
             int IDporta = scanner.nextInt();
-            scanner.nextLine(); // limpa buffer
+            scanner.nextLine();
 
             if (criancas.isEmpty()) {
                 System.out.println("Nenhuma criança cadastrada. Cadastre uma antes de criar a porta.");
@@ -83,7 +83,7 @@ public class Agencia {
             mostrarCriancas();
 
             int indexCrianca = scanner.nextInt();
-            scanner.nextLine(); // limpa buffer
+            scanner.nextLine();
             Crianca selected = getCrianca(indexCrianca);
             if (selected == null) {
                 System.out.println("Índice de criança inválido.");
