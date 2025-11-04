@@ -3,49 +3,90 @@ package src;
 import java.util.*;
 
 public class Agencia {
-    ArrayList<Monstro> monstros;
+    ArrayList<Monstro> monstrosPrincipal;
+    ArrayList<Monstro> monstrosAuxiliares;
     ArrayList<Porta> portas;
     ArrayList<Gabinete> gabinetes;
     ArrayList<Crianca> criancas;
     ArrayList<Cilindro> cilindros;
 
     public Agencia() {
-        monstros = new ArrayList<Monstro>();
+        monstrosPrincipal = new ArrayList<Monstro>();
+        monstrosAuxiliares = new ArrayList<Monstro>();
         portas = new ArrayList<Porta>();
         gabinetes = new ArrayList<Gabinete>();
         criancas = new ArrayList<Crianca>();
         cilindros = new ArrayList<Cilindro>();
     }
 
-    public void addMonstro(Monstro m) { monstros.add(m); }
+    public void addMonstroPrincipal(Monstro m) { monstrosPrincipal.add(m); }
+    public void addMonstroAuxiliar(Monstro m) { monstrosAuxiliares.add(m); }
     public void addPorta(Porta p) { portas.add(p); }
     public void addGabinete(Gabinete g) { gabinetes.add(g); }
     public void addCrianca(Crianca c) { criancas.add(c); }
     public void addCilindro(Cilindro ce) { cilindros.add(ce); }
-    
-    private void mostrarLista(List<?> lista) {
-        if (lista == null || lista.isEmpty()) { System.out.println("A lista está vazia."); return; }
+
+    private int mostrarLista(List<?> lista) {
+        if (lista == null || lista.isEmpty()) { System.out.println("A lista está vazia."); return -1; }
         int i = 0; for (Object item : lista) { System.out.println(i + " - " + item); i++; }
+        return 0;
     }
 
-    public void mostrarMonstros() { mostrarLista(monstros); }
-    public void mostrarPortas() { mostrarLista(portas); }
-    public void mostrarGabinetes() { mostrarLista(gabinetes); }
-    public void mostrarCriancas() { mostrarLista(criancas); }
-    public void mostrarCilindros() { mostrarLista(cilindros); }
+    public int mostrarMonstros() {
+        try {
+            System.out.println("\nMonstros Principais:");
+            mostrarLista(monstrosPrincipal);
+            System.out.println("\nMonstros Auxiliares:");
+            mostrarLista(monstrosAuxiliares);
+            return 0;
+        }
+
+        catch (Exception e) {
+            System.out.println("Erro ao mostrar monstros: " + e.getMessage());
+            return -1;
+        }
+    }
+
+    public int mostrarMonstrosPrincipal() { return mostrarLista(monstrosPrincipal); }
+    public int mostrarMonstrosAuxiliar() { return mostrarLista(monstrosAuxiliares); }
+
+    public int mostrarPortas() { return mostrarLista(portas); }
+    public int mostrarGabinetes() { return mostrarLista(gabinetes); }
+    public int mostrarCriancas() { return mostrarLista(criancas); }
+    public int mostrarCilindros() { return mostrarLista(cilindros); }
+
+    public int mostrarEntidadesCadastradas() {
+        System.out.println("\n--- Entidades Cadastradas ---");
+        mostrarMonstros();
+        mostrarPortas();
+        mostrarGabinetes();
+        mostrarCriancas();
+        mostrarCilindros();
+        System.out.println("-----------------------------\n");
+        return 0;
+    }
 
     private <T> T encontrarPorIndex(List<T> lista, int index) {
         if (lista == null || index < 0 || index >= lista.size()) return null;
         return lista.get(index);
     }
 
-    public Monstro getMonstro(int index) { return encontrarPorIndex(monstros, index); }
+    public Monstro getMonstroPrincipal(int index) { return encontrarPorIndex(monstrosPrincipal, index); }
+    public Monstro getMonstroAuxiliar(int index) { return encontrarPorIndex(monstrosAuxiliares, index); }
     public Porta getPorta(int index) { return encontrarPorIndex(portas, index); }
     public Gabinete getGabinete(int index) { return encontrarPorIndex(gabinetes, index); }
     public Crianca getCrianca(int index) { return encontrarPorIndex(criancas, index); }
     public Cilindro getCilindro(int index) { return encontrarPorIndex(cilindros, index); }
 
+    public ArrayList<Monstro> getMonstrosPrincipal() { return monstrosPrincipal; }
+    public ArrayList<Monstro> getMonstrosAuxiliares() { return monstrosAuxiliares; }
+    public ArrayList<Porta> getPortas() { return portas; }
+    public ArrayList<Gabinete> getGabinetes() { return gabinetes; }
+    public ArrayList<Crianca> getCriancas() { return criancas; }
+    public ArrayList<Cilindro> getCilindros() { return cilindros; }
+
     public void setMonstro(String nome, String tipo) {
+        // TODO
     }
 
     public void setPorta(int id, Crianca crianca) {
@@ -68,32 +109,21 @@ public class Agencia {
         cilindros.add(cilindro);
     }
 
-    public void criarPortaInterativa(Scanner scanner) {
-        System.out.print("Digite o ID da porta: ");
-        try {
-            int IDporta = scanner.nextInt();
-            scanner.nextLine();
 
-            if (criancas.isEmpty()) {
-                System.out.println("Nenhuma criança cadastrada. Cadastre uma antes de criar a porta.");
-                return;
-            }
+    // nova função para processar o gabinete com o cilindro
+    public void processarGabinete(int indexGabinete) {
+        Gabinete g = getGabinete(indexGabinete);
+        Cilindro c = g.getCilindro();
+        Porta p = g.getPorta();
+        Monstro m_principal = g.getMonstroPrincipal();
+        Monstro m_auxiliar = g.getMonstroAuxiliar();
 
-            System.out.println("Selecione a Criança pelo índice:");
-            mostrarCriancas();
-
-            int indexCrianca = scanner.nextInt();
-            scanner.nextLine();
-            Crianca selected = getCrianca(indexCrianca);
-            if (selected == null) {
-                System.out.println("Índice de criança inválido.");
-                return;
-            }
-            setPorta(IDporta, selected);
-            System.out.println("Porta criada e vinculada à criança: " + selected.getNome());
-        } catch (InputMismatchException ex) {
-            System.out.println("Entrada inválida. Operação cancelada.");
-            scanner.nextLine();
+        if (g == null || c == null || p == null || m_principal == null || m_auxiliar == null) {
+            System.out.println("Erro: Gabinete, Cilindro, Porta ou Monstros inválidos.");
+            return;
         }
+
+        // Chama o fluxo completo
+        g.processarEnergia(c, p, m_principal, m_auxiliar);
     }
 }

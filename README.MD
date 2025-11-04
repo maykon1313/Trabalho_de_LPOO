@@ -18,7 +18,7 @@ go fuck your self daviadão and maykuzinho_delicioso
 
 5. Main: Programa principal Responsável por manipular a agência. Nada nele deve possuir algo que manipule diretamente a Agência.
 
-6. Monstro: Dividido em três tipos: Susto, Riso e Suporte. Responsáveis, respectivamente, por assustar ou fazer a criança rir ou amazenar a energia gerada. Um monstro pode trocar de Susto/Riso para Suporte, mas não de Susto para Riso ou ao contrário.
+6. Monstro: Dividido em três tipos: Susto, Riso e Suporte. Responsáveis, respectivamente, por assustar ou fazer a criança rir ou amazenar a energia gerada.
 
 7. Porta: Responsável apenas por guardar qual a criança.
 
@@ -56,4 +56,9 @@ go fuck your self daviadão and maykuzinho_delicioso
 1. Possui um nome, uma eficiência e um tipo(Susto/Riso/Suporte).
 2. Assusta ou faz a criança rir para gerar energia.
 3. Ou fica responsável apenas por amazenar a energia em um cilindro de energia.
-4. O monstro de Riso/Susto pode alterar para monstro de Suporte. **#TODO**
+4. Integrar os monstro asssutador/risos chamando [suporte.receberEnergia ]
+
+### Porta
+
+1. Possui um ID.
+2. Armazena a criança.

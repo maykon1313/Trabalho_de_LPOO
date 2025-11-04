@@ -14,9 +14,14 @@ public class Crianca {
     public void setNome(String nome) { this.nome = nome; }
     public String getNome() { return this.nome; }
     
+    public void setEnergiaSusto(int energia) { this.energiaSusto = energia; }
+    public void setEnergiaRiso(int energia) { this.energiaRiso = energia; }
+    
     public int getEnergia(String tipo) {
         if (tipo == "susto") return this.energiaSusto;
         else if (tipo == "riso") return this.energiaRiso;
         else return -1;
     }
+
+    public String toString() { return "Criança: " + nome; }
 }

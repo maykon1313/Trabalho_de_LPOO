@@ -13,5 +13,7 @@ public class Porta {
     public void setId(int id) { this.id = id; }
 
     public Crianca getCrianca() { return this.cotocos; }
-    public int getId() { return this.id; }  
+    public int getId() { return this.id; }
+
+    public String toString() { return "Porta ID: " + id + ", Criança: " + cotocos; }
 }
