@@ -58,10 +58,19 @@ public class Agencia {
     public int mostrarEntidadesCadastradas() {
         System.out.println("\n--- Entidades Cadastradas ---");
         mostrarMonstros();
+
+        System.out.println("\nPortas Cadastradas");
         mostrarPortas();
+
+        System.out.println("\nGabinetes Cadastradas");
         mostrarGabinetes();
+
+        System.out.println("\nCriancas Cadastradas");
         mostrarCriancas();
+
+        System.out.println("\nCilindros Cadastradas");
         mostrarCilindros();
+
         System.out.println("-----------------------------\n");
         return 0;
     }
@@ -86,7 +95,26 @@ public class Agencia {
     public ArrayList<Cilindro> getCilindros() { return cilindros; }
 
     public void setMonstro(String nome, String tipo) {
-        // TODO
+        Monstro monstro = null;
+        
+        if (tipo.equalsIgnoreCase("susto")) {
+            monstro = new MonstroDoSusto(nome);
+            monstrosPrincipal.add(monstro);
+        } 
+        else if (tipo.equalsIgnoreCase("riso")) {
+            monstro = new MonstroDoRiso(nome);
+            monstrosPrincipal.add(monstro);
+        } 
+        else if (tipo.equalsIgnoreCase("suporte")) {
+            monstro = new MonstroDeSuporte(nome);
+            monstrosAuxiliares.add(monstro);
+        } 
+        else {
+            System.out.println("Tipo de monstro inválido: " + tipo);
+            return;
+        }
+        
+        System.out.println("Monstro " + nome + " (" + tipo + ") adicionado com sucesso.");
     }
 
     public void setPorta(int id, Crianca crianca) {
@@ -94,7 +122,7 @@ public class Agencia {
         portas.add(porta);
     }
 
-    public void setGabinete(int id, Porta porta, Monstro m_principal, Monstro m_auxiliar) {
+    public void setGabinete(int id, Porta porta, Monstro m_principal, MonstroDeSuporte m_auxiliar) {
         Gabinete g = new Gabinete(id, porta, m_principal, m_auxiliar);
         gabinetes.add(g);
     }
@@ -116,10 +144,27 @@ public class Agencia {
         Cilindro c = g.getCilindro();
         Porta p = g.getPorta();
         Monstro m_principal = g.getMonstroPrincipal();
-        Monstro m_auxiliar = g.getMonstroAuxiliar();
+        MonstroDeSuporte m_auxiliar = g.getMonstroAuxiliar();
 
-        if (g == null || c == null || p == null || m_principal == null || m_auxiliar == null) {
-            System.out.println("Erro: Gabinete, Cilindro, Porta ou Monstros inválidos.");
+        //Caso seja inserido alguma informação errada
+        if (g == null) {
+            System.out.println("Erro: Gabinete inválido.");
+            return;
+        }
+        if (c == null){
+            System.out.println("Erro: Cilindro inválido.");
+            return;
+        }
+        if (p == null){
+            System.out.println("Erro: Porta inválida.");
+            return;
+        }
+        if (m_principal == null){
+            System.out.println("Erro: Monstro principal inválido.");
+            return;
+        }
+        if (m_auxiliar == null){
+            System.out.println("Erro: Monstro auxiliar inválido.");
             return;
         }
 

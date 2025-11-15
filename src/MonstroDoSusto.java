@@ -11,4 +11,3 @@ public class MonstroDoSusto extends Monstro {
         System.out.println(getNome() + " Energia do susto coletada.");
     }
 }
-

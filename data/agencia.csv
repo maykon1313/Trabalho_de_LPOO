@@ -1,21 +1,23 @@
 Criancas
 nome,energiaSusto,energiaRiso
-Davi,52,30
-Breno,36,2
+Breno,18,4
 
 MonstrosPrincipais
 nome,eficiencia,tipo
+thiago,0,riso
 
 MonstrosAuxiliares
 nome,eficiencia,tipo
+breno,0,suporte
 
 Portas
 id,criancaNome
-45,Davi
+54,Breno
 
 Gabinetes
 id,portaId,monstroPrincipalNome,monstroAuxiliarNome
+0,54,thiago,breno
 
 Cilindros
 id,armazenado
-12,0
+67,0
