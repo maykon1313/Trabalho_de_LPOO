@@ -2,17 +2,17 @@ package src;
 
 public abstract class Monstro {
     private String nome;
-    private int eficiencia;
+    private double eficiencia;
 
     public Monstro(String nome){
         this.nome = nome;
-        this.eficiencia = (int)(Math.random()); 
+        this.eficiencia = (Math.random()); 
         // 0.0 - 1.0
     }
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
-    public void setEficiencia(int eficiencia) { this.eficiencia = eficiencia; }
+    public void setEficiencia(double eficiencia) { this.eficiencia = eficiencia; }
 
     public String getTipoMonstro() {
         if (this instanceof MonstroDoSusto) return "susto";
@@ -22,7 +22,7 @@ public abstract class Monstro {
     }
 
     // Método único para gerar energia
-    public int getEficiencia() {
+    public double getEficiencia() {
 
         // Riso gera mais energia 
         if (this instanceof MonstroDoRiso) {
@@ -42,9 +42,9 @@ public abstract class Monstro {
 
         String tipo = getTipoMonstro(); // “susto” ou “riso”
         int energiaBase = c.getEnergia(tipo);  // energia da criança
-        int eficiencia = getEficiencia(); // eficiência do monstro
+        double eficiencia = getEficiencia(); // eficiência do monstro
 
-        return energiaBase * eficiencia;
+        return (int) (energiaBase * eficiencia);
     }
 
     public String toString() {

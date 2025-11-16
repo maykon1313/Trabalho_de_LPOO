@@ -1,23 +1,40 @@
 Criancas
 nome,energiaSusto,energiaRiso
-Breno,18,4
+Breniz,18,4
+c1,54,67
+c2,94,71
+c3,36,9
 
 MonstrosPrincipais
 nome,eficiencia,tipo
-thiago,0,riso
+Thiagiz,0.5,riso
+m1,0.2222222222222222,susto
+m2,0.5,riso
+aaa,0.6258946092192287,riso
 
 MonstrosAuxiliares
 nome,eficiencia,tipo
-breno,0,suporte
+Brenono,0.0,suporte
+m3,0.0,suporte
 
 Portas
 id,criancaNome
-54,Breno
+54,Breniz
+1,c1
+2,c2
+3,c3
 
 Gabinetes
 id,portaId,monstroPrincipalNome,monstroAuxiliarNome
-0,54,thiago,breno
+0,54,aaa,Brenono
+1,1,m1,m3
+2,2,m2,m3
+3,3,m2,m3
 
 Cilindros
 id,armazenado
-67,0
+67,2
+1,0
+2,0
+3,0
+4,0

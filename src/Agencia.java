@@ -1,6 +1,7 @@
 package src;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Agencia {
     ArrayList<Monstro> monstrosPrincipal;
@@ -54,7 +55,6 @@ public class Agencia {
     public int mostrarGabinetes() { return mostrarLista(gabinetes); }
     public int mostrarCriancas() { return mostrarLista(criancas); }
     public int mostrarCilindros() { return mostrarLista(cilindros); }
-
     public int mostrarEntidadesCadastradas() {
         System.out.println("\n--- Entidades Cadastradas ---");
         mostrarMonstros();
@@ -117,9 +117,18 @@ public class Agencia {
         System.out.println("Monstro " + nome + " (" + tipo + ") adicionado com sucesso.");
     }
 
-    public void setPorta(int id, Crianca crianca) {
-        Porta porta = new Porta(id, crianca);
-        portas.add(porta);
+    public void setPorta(int id, Crianca crianca, boolean change) {
+        if (!change) {
+            Porta porta = new Porta(id);
+            porta.setCrianca(crianca);
+            portas.add(porta);
+        }
+
+        else {
+            Porta porta = new Porta(id);
+            porta.changeCrianca(crianca);
+            portas.add(porta);
+        }
     }
 
     public void setGabinete(int id, Porta porta, Monstro m_principal, MonstroDeSuporte m_auxiliar) {
@@ -138,7 +147,6 @@ public class Agencia {
     }
 
 
-    // nova função para processar o gabinete com o cilindro
     public void processarGabinete(int indexGabinete) {
         Gabinete g = getGabinete(indexGabinete);
         Cilindro c = g.getCilindro();
@@ -146,29 +154,23 @@ public class Agencia {
         Monstro m_principal = g.getMonstroPrincipal();
         MonstroDeSuporte m_auxiliar = g.getMonstroAuxiliar();
 
-        //Caso seja inserido alguma informação errada
-        if (g == null) {
-            System.out.println("Erro: Gabinete inválido.");
-            return;
-        }
-        if (c == null){
-            System.out.println("Erro: Cilindro inválido.");
-            return;
-        }
-        if (p == null){
-            System.out.println("Erro: Porta inválida.");
-            return;
-        }
-        if (m_principal == null){
-            System.out.println("Erro: Monstro principal inválido.");
-            return;
-        }
-        if (m_auxiliar == null){
-            System.out.println("Erro: Monstro auxiliar inválido.");
-            return;
+        String[] errorMessages = {
+            "Erro: Gabinete inválido.",
+            "Erro: Cilindro inválido.",
+            "Erro: Porta inválida.",
+            "Erro: Monstro principal inválido.",
+            "Erro: Monstro auxiliar inválido."
+        };
+        Object[] objects = {g, c, p, m_principal, m_auxiliar};
+        
+        for (int i = 0; i < objects.length; i++) {
+            if (objects[i] == null) {
+                System.out.println(errorMessages[i]);
+                return;
+            }
         }
 
         // Chama o fluxo completo
-        g.processarEnergia(c, p, m_principal, m_auxiliar);
+        Gabinete.processarEnergia(c, p, m_principal, m_auxiliar);
     }
 }
