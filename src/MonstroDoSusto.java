@@ -7,7 +7,7 @@ public class MonstroDoSusto extends Monstro {
     }
 
     @Override
-    public void trabalhar() {
-        System.out.println(getNome() + " Energia do susto coletada.");
+    public String toString() {
+        return "Nome: " + this.getNome() + " | Eficiencia: " + String.format("%.4f", this.getEficiencia()) + " | Tipo: Susto";
     }
 }

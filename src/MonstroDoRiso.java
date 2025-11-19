@@ -7,7 +7,7 @@ public class MonstroDoRiso extends Monstro {
     }
 
     @Override
-    public void trabalhar() {
-        System.out.println(getNome() + " Energia do riso coletada.");
+    public String toString() {
+        return "Nome: " + this.getNome() + " | Eficiencia: " + String.format("%.4f", this.getEficiencia()) + " | Tipo: Riso";
     }
 }

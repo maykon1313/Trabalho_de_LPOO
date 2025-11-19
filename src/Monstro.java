@@ -6,14 +6,13 @@ public abstract class Monstro {
 
     public Monstro(String nome){
         this.nome = nome;
-        this.eficiencia = (Math.random()); 
-        // 0.0 - 1.0
+        this.eficiencia = (Math.random()); // 0.0 - 1.0
     }
 
-    public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     public void setEficiencia(double eficiencia) { this.eficiencia = eficiencia; }
 
+    public String getNome() { return nome; }
     public String getTipoMonstro() {
         if (this instanceof MonstroDoSusto) return "susto";
         else if (this instanceof MonstroDoRiso) return "riso";
@@ -21,20 +20,20 @@ public abstract class Monstro {
         return null;
     }
 
-    // Método único para gerar energia
+    // Riso gera mais energia 
     public double getEficiencia() {
-
-        // Riso gera mais energia 
         if (this instanceof MonstroDoRiso) {
             return eficiencia;
         }
-
-        // Susto médio
         else if (this instanceof MonstroDoSusto){
             return eficiencia * 2/3;
         }
-
-        return 0;
+        else if (this instanceof MonstroDeSuporte){
+            return eficiencia;
+        }
+        else {
+            return -1;
+        }
     } 
 
     public int coletarEnergiaDaCrianca(Crianca c) {
@@ -47,9 +46,8 @@ public abstract class Monstro {
         return (int) (energiaBase * eficiencia);
     }
 
+    @Override
     public String toString() {
-        return "Nome: " + nome + "| Eficiencia: " + eficiencia + "| Tipo: " + getTipoMonstro();
+        return "Nome: " + nome + " | Eficiencia: " + String.format("%.4f", eficiencia);
     }
-
-    public abstract void trabalhar();
 }

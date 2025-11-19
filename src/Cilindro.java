@@ -17,14 +17,18 @@ public class Cilindro {
 
     public void armazenarEnergia(int energia) { 
         if (this.armazenado + energia >= 100) {
-            System.out.println("Cilindro " + id + " está cheio. Armazenamento máximo atingido.");
+            System.out.println("AVISO - Cilindro " + id + " está cheio. Armazenamento máximo atingido.");
             this.armazenado = 100;
             return;
         }
+        
         else {
             this.armazenado += energia; 
         }
     }
 
-    public String toString() { return "Cilindro ID: " + id + ", Energia Armazenada: " + armazenado; }
+    @Override
+    public String toString() { 
+        return "Cilindro ID: " + id + " | Energia Armazenada: " + armazenado;
+    }
 }

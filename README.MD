@@ -1,64 +1,69 @@
 # README do Trabalho de LPOO
 
-Qualquer alteração feita deixa avisado aqui, pra evitar qualquer discussão desnecessária
-Por favor, isso é necessário
-
-Não quero.
-go fuck your self daviadão and maykuzinho_delicioso
-
 ## Principais funções de cada classe
 
-1. Agência: Responsável por cadastrar e amazenar novas entidades.
+1. **Agência**: Responsável por gerenciar todas as entidades do sistema (monstros, portas, gabinetes, crianças e cilindros). Permite cadastrar, listar, selecionar e manipular essas entidades, além de processar gabinetes para geração de energia.
 
-2. Cilindro: Responsável por amazenar energia.
+2. **Cilindro**: Responsável por armazenar energia gerada pelos monstros. Possui um limite máximo de 100 unidades e avisa quando cheio.
 
-3. Criança: Responsável por gerar a energia, o monstro principal assusta ou faz a criança rir, essa energia gerada é manipulada pelo monstro de suporte que armazena em um cilindro de energia.
+3. **Criança**: Representa uma criança com nome e energias base de susto e riso (geradas aleatoriamente). Pode estar associada a uma porta.
 
-4. Gabinete: Responsável por gerenciar: O monstro principal, o monstro de suporte, a porta e o cilindro.
+4. **Gabinete**: Coordena o processo de geração de energia, contendo uma porta (com criança), um monstro principal (susto ou riso), um monstro de suporte e um cilindro. Possui um método estático para processar a energia.
 
-5. Main: Programa principal Responsável por manipular a agência. Nada nele deve possuir algo que manipule diretamente a Agência.
+5. **Main**: Programa principal com menu interativo para manipular a agência. Carrega dados de um arquivo CSV no início e salva ao sair.
 
-6. Monstro: Dividido em três tipos: Susto, Riso e Suporte. Responsáveis, respectivamente, por assustar ou fazer a criança rir ou amazenar a energia gerada.
+6. **Monstro**: Classe abstrata para monstros com nome e eficiência. Subclasses coletam energia da criança baseada no tipo (susto ou riso).
 
-7. Porta: Responsável apenas por guardar qual a criança.
+7. **MonstroDeSuporte**: Subclasse de Monstro que armazena energia no cilindro, aplicando fatores aleatórios adicionais.
+
+8. **MonstroDoRiso**: Subclasse de Monstro especializada em gerar energia de riso.
+
+9. **MonstroDoSusto**: Subclasse de Monstro especializada em gerar energia de susto.
+
+10. **Porta**: Representa uma porta com ID, associada a uma criança.
 
 ## O que cada classe manipula
 
 ### Agência
 
-1. Cradastrar e armazenar novos: Cilindros, Crianças, Gabinetes, Monstros e Portas.
-2. Mostrar e selecionar as entidades já cadastras: Listar e retornar a entidade da lista caso seja pedido.
-3. Manipular as entidades já cadastras: Mudar váriaveis de cada entidade, como por exemplo o nome ou selecionar quem vai trabalhar em cada gabinete.
-4. Trabalhar: Manda o gabinete, caso já esteje configurado, trabalhar. **#TODO**
+1. Cadastrar novas entidades: Cilindros, Crianças, Gabinetes, Monstros (principais e auxiliares) e Portas.
+2. Listar e selecionar entidades já cadastradas.
+3. Manipular entidades: Alterar atributos como nome, ID, associações (ex.: trocar criança de uma porta).
+4. Processar gabinete: Executar o processo de geração e armazenamento de energia em um gabinete específico.
 
 ### Cilindro
 
-1. Possui um ID.
-2. Armazenar energia.
+1. Armazenar energia até o limite de 100 unidades.
+2. Avisar quando o armazenamento está cheio.
 
 ### Criança
 
-1. Possui um nome, energia de susto e energia de riso.
-2. Gerar energia.
+1. Possuir nome e energias base de susto e riso (aleatórias).
+2. Associar-se a uma porta.
 
 ### Gabinete
 
-1. Possui um ID.
-2. Amazena os monstros, a porta e o cilindro que será usado no trabalho.
-3. Gerencia todo o processo quanto a geração de energia, em qual porta o monstro vai entrar, o quanto de energia foi gerado e em qual cilindro o monstro de suporte irá armazená-la.
+1. Coordenar monstro principal, monstro de suporte, porta e cilindro.
+2. Processar energia: Monstro principal coleta energia da criança, monstro de suporte armazena no cilindro com variações aleatórias.
 
 ### Main
 
-1. Menu iterátivo para chamar os métodos da agência.
+1. Menu interativo para todas as operações da agência.
+2. Carregar dados iniciais de `data/agencia.csv`.
+3. Salvar dados ao sair em `data/agencia.csv`.
 
 ### Monstro
 
-1. Possui um nome, uma eficiência e um tipo(Susto/Riso/Suporte).
-2. Assusta ou faz a criança rir para gerar energia.
-3. Ou fica responsável apenas por amazenar a energia em um cilindro de energia.
-4. Integrar os monstro asssutador/risos chamando [suporte.receberEnergia ]
+1. Coletar energia da criança baseada no tipo (susto ou riso) e eficiência.
+2. Para monstros de suporte: Armazenar energia no cilindro com eficiência adicional.
 
 ### Porta
 
-1. Possui um ID.
-2. Armazena a criança.
+1. Associar uma criança.
+2. Possuir um ID único.
+
+## Funcionalidades Adicionais
+
+- **Persistência de Dados**: O programa carrega dados iniciais de `data/agencia.csv` e salva todas as alterações ao sair, permitindo continuidade entre execuções.
+- **Processamento de Energia**: O gabinete processa energia aplicando fatores aleatórios para simular variação real.
+- **Validação de Entrada**: Menus interativos com validação de entradas para evitar erros.

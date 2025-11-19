@@ -62,7 +62,7 @@ public class Agencia {
         System.out.println("\nPortas Cadastradas");
         mostrarPortas();
 
-        System.out.println("\nGabinetes Cadastradas");
+        System.out.println("\nGabinetes Cadastrados");
         mostrarGabinetes();
 
         System.out.println("\nCriancas Cadastradas");
@@ -119,8 +119,7 @@ public class Agencia {
 
     public void setPorta(int id, Crianca crianca, boolean change) {
         if (!change) {
-            Porta porta = new Porta(id);
-            porta.setCrianca(crianca);
+            Porta porta = new Porta(id, crianca);
             portas.add(porta);
         }
 
@@ -131,8 +130,12 @@ public class Agencia {
         }
     }
 
-    public void setGabinete(int id, Porta porta, Monstro m_principal, MonstroDeSuporte m_auxiliar) {
-        Gabinete g = new Gabinete(id, porta, m_principal, m_auxiliar);
+    public void setPorta(Porta porta, Crianca crianca) {
+        porta.changeCrianca(crianca);
+    }
+
+    public void setGabinete(int id, Porta porta, Monstro m_principal, MonstroDeSuporte m_auxiliar, Cilindro cilindro) {
+        Gabinete g = new Gabinete(id, porta, m_principal, m_auxiliar, cilindro);
         gabinetes.add(g);
     }
     
@@ -161,6 +164,7 @@ public class Agencia {
             "Erro: Monstro principal inválido.",
             "Erro: Monstro auxiliar inválido."
         };
+
         Object[] objects = {g, c, p, m_principal, m_auxiliar};
         
         for (int i = 0; i < objects.length; i++) {
@@ -170,7 +174,6 @@ public class Agencia {
             }
         }
 
-        // Chama o fluxo completo
         Gabinete.processarEnergia(c, p, m_principal, m_auxiliar);
     }
 }

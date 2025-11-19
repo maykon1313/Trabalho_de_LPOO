@@ -7,11 +7,12 @@ public class Gabinete {
     private MonstroDeSuporte monstroAuxiliar;
     private Cilindro cilindro;
 
-    public Gabinete(int id, Porta abracadabra, Monstro monstroPrincipal, MonstroDeSuporte monstroAuxiliar) {
+    public Gabinete(int id, Porta abracadabra, Monstro monstroPrincipal, MonstroDeSuporte monstroAuxiliar, Cilindro cilindro) {
         this.id = id;
         this.abracadabra = abracadabra;
         this.monstroPrincipal = monstroPrincipal;
         this.monstroAuxiliar = monstroAuxiliar;
+        this.cilindro = cilindro;
     }
 
     public void setId(int id) { this.id = id; }
@@ -26,7 +27,10 @@ public class Gabinete {
     public MonstroDeSuporte getMonstroAuxiliar() { return this.monstroAuxiliar; }
     public Cilindro getCilindro() { return this.cilindro; }
 
-    public String toString() { return "Gabinete ID: " + id + ", Porta: " + abracadabra + ", Monstro Principal: " + monstroPrincipal + ", Monstro Auxiliar: " + monstroAuxiliar + ", Cilindro: " + cilindro; }
+    @Override
+    public String toString() { 
+        return "Gabinete ID: " + id + ", Porta: " + abracadabra + ", Monstro Principal: " + monstroPrincipal + ", Monstro Auxiliar: " + monstroAuxiliar + ", Cilindro: " + cilindro; 
+    }
 
     public static void processarEnergia(Cilindro c, Porta p, Monstro m_principal, MonstroDeSuporte m_auxiliar) {
         if (c == null || p == null || m_principal == null || m_auxiliar == null) {
@@ -40,14 +44,20 @@ public class Gabinete {
             return;
         }
 
-        int energiaTotal = m_principal.coletarEnergiaDaCrianca(crianca);
+        int energia = m_principal.coletarEnergiaDaCrianca(crianca);
 
-        m_auxiliar.receberEnergia(energiaTotal, c);
+        int fator;
+        if (Math.random() > 0.5) { fator = 1; }
+        else { fator = -1; }
 
-        System.out.println("Processamento concluído:");
+        int energia_real = energia + (int) (fator * (energia * Math.random()));
+
+        int energia_processada = m_auxiliar.receberEnergia(energia_real, c);
+
+        System.out.println("\nProcessamento concluído:");
         System.out.println("Criança: " + crianca.getNome());
         System.out.println("Monstro Principal (" + m_principal.getNome() + ")");
         System.out.println("Monstro Auxiliar (" + m_auxiliar.getNome() + ")");
-        System.out.println("Energia total adicionada ao Cilindro (" + c.getId() + "): " + energiaTotal);
+        System.out.println("Energia adicionada ao Cilindro (" + c.getId() + "): " + energia_processada);
     }
 }
