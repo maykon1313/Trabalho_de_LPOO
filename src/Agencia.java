@@ -1,7 +1,6 @@
 package src;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Agencia {
     ArrayList<Monstro> monstrosPrincipal;
@@ -117,22 +116,22 @@ public class Agencia {
         System.out.println("Monstro " + nome + " (" + tipo + ") adicionado com sucesso.");
     }
 
-    public void setPorta(int id, Crianca crianca, boolean change) {
+    public void setPorta(Crianca crianca, boolean change) {
         if (!change) {
-            Porta porta = new Porta(id);
+            Porta porta = new Porta();
             porta.setCrianca(crianca);
             portas.add(porta);
         }
 
         else {
-            Porta porta = new Porta(id);
+            Porta porta = new Porta();
             porta.changeCrianca(crianca);
             portas.add(porta);
         }
     }
 
-    public void setGabinete(int id, Porta porta, Monstro m_principal, MonstroDeSuporte m_auxiliar) {
-        Gabinete g = new Gabinete(id, porta, m_principal, m_auxiliar);
+    public void setGabinete(Porta porta, Monstro m_principal, MonstroDeSuporte m_auxiliar) {
+        Gabinete g = new Gabinete(porta, m_principal, m_auxiliar);
         gabinetes.add(g);
     }
     
@@ -141,8 +140,8 @@ public class Agencia {
         criancas.add(crianca);
     }
 
-    public void setCilindro(int id) {
-        Cilindro cilindro = new Cilindro(id);
+    public void setCilindro() {
+        Cilindro cilindro = new Cilindro();
         cilindros.add(cilindro);
     }
 

@@ -1,32 +1,32 @@
 package src;
 
-public class Gabinete {
-    private int id;
+public class Gabinete extends Identificador{
+    
     private Porta abracadabra;
     private Monstro monstroPrincipal;
     private MonstroDeSuporte monstroAuxiliar;
     private Cilindro cilindro;
 
-    public Gabinete(int id, Porta abracadabra, Monstro monstroPrincipal, MonstroDeSuporte monstroAuxiliar) {
-        this.id = id;
+    public Gabinete(Porta abracadabra, Monstro monstroPrincipal, MonstroDeSuporte monstroAuxiliar) {
+        
         this.abracadabra = abracadabra;
         this.monstroPrincipal = monstroPrincipal;
         this.monstroAuxiliar = monstroAuxiliar;
     }
 
-    public void setId(int id) { this.id = id; }
+    
     public void setPorta(Porta abracadabra) { this.abracadabra = abracadabra; }
     public void setMonstroPrincipal(Monstro monstroPrincipal) { this.monstroPrincipal = monstroPrincipal; }
     public void setMonstroAuxiliar(MonstroDeSuporte monstroAuxiliar) { this.monstroAuxiliar = monstroAuxiliar; }
     public void setCilindro(Cilindro cilindro) { this.cilindro = cilindro; }
 
-    public int getId() { return this.id; }
+    
     public Porta getPorta() { return this.abracadabra; }
     public Monstro getMonstroPrincipal() { return this.monstroPrincipal; }
     public MonstroDeSuporte getMonstroAuxiliar() { return this.monstroAuxiliar; }
     public Cilindro getCilindro() { return this.cilindro; }
 
-    public String toString() { return "Gabinete ID: " + id + ", Porta: " + abracadabra + ", Monstro Principal: " + monstroPrincipal + ", Monstro Auxiliar: " + monstroAuxiliar + ", Cilindro: " + cilindro; }
+    public String toString() { return "Gabinete ID: " + this.getId() + ", Porta: " + abracadabra + ", Monstro Principal: " + monstroPrincipal + ", Monstro Auxiliar: " + monstroAuxiliar + ", Cilindro: " + cilindro; }
 
     public static void processarEnergia(Cilindro c, Porta p, Monstro m_principal, MonstroDeSuporte m_auxiliar) {
         if (c == null || p == null || m_principal == null || m_auxiliar == null) {
