@@ -1,6 +1,6 @@
 package src;
 
-public class Gabinete {
+public final class Gabinete {
     private int id;
     private Porta abracadabra;
     private Monstro monstroPrincipal;
@@ -32,16 +32,23 @@ public class Gabinete {
         return "Gabinete ID: " + id + ", Porta: " + abracadabra + ", Monstro Principal: " + monstroPrincipal + ", Monstro Auxiliar: " + monstroAuxiliar + ", Cilindro: " + cilindro; 
     }
 
-    public static void processarEnergia(Cilindro c, Porta p, Monstro m_principal, MonstroDeSuporte m_auxiliar) {
-        if (c == null || p == null || m_principal == null || m_auxiliar == null) {
-            System.out.println("Erro: Cilindro, Porta ou Monstros inválidos.");
-            return;
+    public static void processarEnergia(Cilindro c, Porta p, Monstro m_principal, MonstroDeSuporte m_auxiliar) throws IllegalArgumentException, IllegalStateException {
+        if (c == null) {
+            throw new IllegalArgumentException("Cilindro inválido.");
+        }
+        if (p == null) {
+            throw new IllegalArgumentException("Porta inválida.");
+        }
+        if (m_principal == null) {
+            throw new IllegalArgumentException("Monstro principal inválido.");
+        }
+        if (m_auxiliar == null) {
+            throw new IllegalArgumentException("Monstro auxiliar inválido.");
         }
 
         Crianca crianca = p.getCrianca();
         if (crianca == null) {
-            System.out.println("Erro: Não há criança na porta.");
-            return;
+            throw new IllegalStateException("Não há criança na porta.");
         }
 
         int energia = m_principal.coletarEnergiaDaCrianca(crianca);
@@ -58,6 +65,12 @@ public class Gabinete {
         System.out.println("Criança: " + crianca.getNome());
         System.out.println("Monstro Principal (" + m_principal.getNome() + ")");
         System.out.println("Monstro Auxiliar (" + m_auxiliar.getNome() + ")");
-        System.out.println("Energia adicionada ao Cilindro (" + c.getId() + "): " + energia_processada);
+
+        if (energia_processada == -1) {
+            System.out.println("Nenhuma energia adicionada ao Cilindro, capacidade máxima atingida.");
+        }
+        else {
+            System.out.println("Energia adicionada ao Cilindro (" + c.getId() + "): " + energia_processada);
+        }
     }
 }

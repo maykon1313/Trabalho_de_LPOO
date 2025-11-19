@@ -1,17 +1,16 @@
 package src;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class Agencia {
-    ArrayList<Monstro> monstrosPrincipal;
-    ArrayList<Monstro> monstrosAuxiliares;
-    ArrayList<Porta> portas;
-    ArrayList<Gabinete> gabinetes;
-    ArrayList<Crianca> criancas;
-    ArrayList<Cilindro> cilindros;
+public final class Agencia {
+    private static ArrayList<Monstro> monstrosPrincipal;
+    private static ArrayList<Monstro> monstrosAuxiliares;
+    private static ArrayList<Porta> portas;
+    private static ArrayList<Gabinete> gabinetes;
+    private static ArrayList<Crianca> criancas;
+    private static ArrayList<Cilindro> cilindros;
 
-    public Agencia() {
+    static {
         monstrosPrincipal = new ArrayList<Monstro>();
         monstrosAuxiliares = new ArrayList<Monstro>();
         portas = new ArrayList<Porta>();
@@ -20,20 +19,20 @@ public class Agencia {
         cilindros = new ArrayList<Cilindro>();
     }
 
-    public void addMonstroPrincipal(Monstro m) { monstrosPrincipal.add(m); }
-    public void addMonstroAuxiliar(Monstro m) { monstrosAuxiliares.add(m); }
-    public void addPorta(Porta p) { portas.add(p); }
-    public void addGabinete(Gabinete g) { gabinetes.add(g); }
-    public void addCrianca(Crianca c) { criancas.add(c); }
-    public void addCilindro(Cilindro ce) { cilindros.add(ce); }
+    public static void addMonstroPrincipal(Monstro m) { monstrosPrincipal.add(m); }
+    public static void addMonstroAuxiliar(Monstro m) { monstrosAuxiliares.add(m); }
+    public static void addPorta(Porta p) { portas.add(p); }
+    public static void addGabinete(Gabinete g) { gabinetes.add(g); }
+    public static void addCrianca(Crianca c) { criancas.add(c); }
+    public static void addCilindro(Cilindro ce) { cilindros.add(ce); }
 
-    private int mostrarLista(List<?> lista) {
+    private static int mostrarLista(List<?> lista) {
         if (lista == null || lista.isEmpty()) { System.out.println("A lista está vazia."); return -1; }
         int i = 0; for (Object item : lista) { System.out.println(i + " - " + item); i++; }
         return 0;
     }
 
-    public int mostrarMonstros() {
+    public static int mostrarMonstros() {
         try {
             System.out.println("\nMonstros Principais:");
             mostrarLista(monstrosPrincipal);
@@ -48,14 +47,14 @@ public class Agencia {
         }
     }
 
-    public int mostrarMonstrosPrincipal() { return mostrarLista(monstrosPrincipal); }
-    public int mostrarMonstrosAuxiliar() { return mostrarLista(monstrosAuxiliares); }
+    public static int mostrarMonstrosPrincipal() { return mostrarLista(monstrosPrincipal); }
+    public static int mostrarMonstrosAuxiliar() { return mostrarLista(monstrosAuxiliares); }
 
-    public int mostrarPortas() { return mostrarLista(portas); }
-    public int mostrarGabinetes() { return mostrarLista(gabinetes); }
-    public int mostrarCriancas() { return mostrarLista(criancas); }
-    public int mostrarCilindros() { return mostrarLista(cilindros); }
-    public int mostrarEntidadesCadastradas() {
+    public static int mostrarPortas() { return mostrarLista(portas); }
+    public static int mostrarGabinetes() { return mostrarLista(gabinetes); }
+    public static int mostrarCriancas() { return mostrarLista(criancas); }
+    public static int mostrarCilindros() { return mostrarLista(cilindros); }
+    public static int mostrarEntidadesCadastradas() {
         System.out.println("\n--- Entidades Cadastradas ---");
         mostrarMonstros();
 
@@ -65,36 +64,36 @@ public class Agencia {
         System.out.println("\nGabinetes Cadastrados");
         mostrarGabinetes();
 
-        System.out.println("\nCriancas Cadastradas");
+        System.out.println("\nCrianças Cadastradas");
         mostrarCriancas();
 
-        System.out.println("\nCilindros Cadastradas");
+        System.out.println("\nCilindros Cadastrados");
         mostrarCilindros();
 
         System.out.println("-----------------------------\n");
         return 0;
     }
 
-    private <T> T encontrarPorIndex(List<T> lista, int index) {
+    private static <T> T encontrarPorIndex(List<T> lista, int index) {
         if (lista == null || index < 0 || index >= lista.size()) return null;
         return lista.get(index);
     }
 
-    public Monstro getMonstroPrincipal(int index) { return encontrarPorIndex(monstrosPrincipal, index); }
-    public Monstro getMonstroAuxiliar(int index) { return encontrarPorIndex(monstrosAuxiliares, index); }
-    public Porta getPorta(int index) { return encontrarPorIndex(portas, index); }
-    public Gabinete getGabinete(int index) { return encontrarPorIndex(gabinetes, index); }
-    public Crianca getCrianca(int index) { return encontrarPorIndex(criancas, index); }
-    public Cilindro getCilindro(int index) { return encontrarPorIndex(cilindros, index); }
+    public static Monstro getMonstroPrincipal(int index) { return encontrarPorIndex(monstrosPrincipal, index); }
+    public static Monstro getMonstroAuxiliar(int index) { return encontrarPorIndex(monstrosAuxiliares, index); }
+    public static Porta getPorta(int index) { return encontrarPorIndex(portas, index); }
+    public static Gabinete getGabinete(int index) { return encontrarPorIndex(gabinetes, index); }
+    public static Crianca getCrianca(int index) { return encontrarPorIndex(criancas, index); }
+    public static Cilindro getCilindro(int index) { return encontrarPorIndex(cilindros, index); }
 
-    public ArrayList<Monstro> getMonstrosPrincipal() { return monstrosPrincipal; }
-    public ArrayList<Monstro> getMonstrosAuxiliares() { return monstrosAuxiliares; }
-    public ArrayList<Porta> getPortas() { return portas; }
-    public ArrayList<Gabinete> getGabinetes() { return gabinetes; }
-    public ArrayList<Crianca> getCriancas() { return criancas; }
-    public ArrayList<Cilindro> getCilindros() { return cilindros; }
+    public static ArrayList<Monstro> getMonstrosPrincipal() { return monstrosPrincipal; }
+    public static ArrayList<Monstro> getMonstrosAuxiliares() { return monstrosAuxiliares; }
+    public static ArrayList<Porta> getPortas() { return portas; }
+    public static ArrayList<Gabinete> getGabinetes() { return gabinetes; }
+    public static ArrayList<Crianca> getCriancas() { return criancas; }
+    public static ArrayList<Cilindro> getCilindros() { return cilindros; }
 
-    public void setMonstro(String nome, String tipo) {
+    public static void setMonstro(String nome, String tipo) {
         Monstro monstro = null;
         
         if (tipo.equalsIgnoreCase("susto")) {
@@ -117,7 +116,7 @@ public class Agencia {
         System.out.println("Monstro " + nome + " (" + tipo + ") adicionado com sucesso.");
     }
 
-    public void setPorta(int id, Crianca crianca, boolean change) {
+    public static void setPorta(int id, Crianca crianca, boolean change) {
         if (!change) {
             Porta porta = new Porta(id, crianca);
             portas.add(porta);
@@ -130,49 +129,35 @@ public class Agencia {
         }
     }
 
-    public void setPorta(Porta porta, Crianca crianca) {
+    public static void setPorta(Porta porta, Crianca crianca) {
         porta.changeCrianca(crianca);
     }
 
-    public void setGabinete(int id, Porta porta, Monstro m_principal, MonstroDeSuporte m_auxiliar, Cilindro cilindro) {
+    public static void setGabinete(int id, Porta porta, Monstro m_principal, MonstroDeSuporte m_auxiliar, Cilindro cilindro) {
         Gabinete g = new Gabinete(id, porta, m_principal, m_auxiliar, cilindro);
         gabinetes.add(g);
     }
     
-    public void setCrianca(String nome) {
+    public static void setCrianca(String nome) {
         Crianca crianca = new Crianca(nome);
         criancas.add(crianca);
     }
 
-    public void setCilindro(int id) {
+    public static void setCilindro(int id) {
         Cilindro cilindro = new Cilindro(id);
         cilindros.add(cilindro);
     }
 
 
-    public void processarGabinete(int indexGabinete) {
+    public static void processarGabinete(int indexGabinete) {
         Gabinete g = getGabinete(indexGabinete);
+        if (g == null) {
+            throw new IllegalArgumentException("Gabinete inválido.");
+        }
         Cilindro c = g.getCilindro();
         Porta p = g.getPorta();
         Monstro m_principal = g.getMonstroPrincipal();
         MonstroDeSuporte m_auxiliar = g.getMonstroAuxiliar();
-
-        String[] errorMessages = {
-            "Erro: Gabinete inválido.",
-            "Erro: Cilindro inválido.",
-            "Erro: Porta inválida.",
-            "Erro: Monstro principal inválido.",
-            "Erro: Monstro auxiliar inválido."
-        };
-
-        Object[] objects = {g, c, p, m_principal, m_auxiliar};
-        
-        for (int i = 0; i < objects.length; i++) {
-            if (objects[i] == null) {
-                System.out.println(errorMessages[i]);
-                return;
-            }
-        }
 
         Gabinete.processarEnergia(c, p, m_principal, m_auxiliar);
     }

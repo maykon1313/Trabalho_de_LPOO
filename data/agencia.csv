@@ -7,20 +7,19 @@ Johnny,25,55,5
 
 MonstrosPrincipais
 nome,eficiencia,tipo
-Sulley,0.85,susto
+Sulley,0.8,susto
 Mike,0.75,riso
-Randall,0.65,susto
+Randall,0.45,susto
 Fungus,0.55,riso
 
 MonstrosAuxiliares
 nome,eficiencia,tipo
-Celia,0.70,suporte
-Roz,0.60,suporte
-Yeti,0.50,suporte
+Celia,0.7,suporte
+Roz,0.6,suporte
+Yeti,0.5,suporte
 
 Portas
 id,criancaNome
-1,c2
 2,Boo
 3,Timmy
 4,Molly

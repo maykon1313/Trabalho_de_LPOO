@@ -1,6 +1,6 @@
 package src;
 
-public class Crianca {
+public final class Crianca {
     private String nome;
     private int energiaSusto;
     private int energiaRiso;
@@ -23,7 +23,7 @@ public class Crianca {
     public int getEnergia(String tipo) {
         if (tipo.equals("susto")) return this.energiaSusto;
         else if (tipo.equals("riso")) return this.energiaRiso;
-        else return -1;
+        else throw new IllegalArgumentException("Tipo de energia inválido: " + tipo + ". Deve ser 'susto' ou 'riso'.");
     }
 
     @Override

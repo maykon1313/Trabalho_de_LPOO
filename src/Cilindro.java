@@ -1,6 +1,6 @@
 package src;
 
-public class Cilindro {
+public final class Cilindro {
     private int id;
     private int armazenado;
 
@@ -15,15 +15,15 @@ public class Cilindro {
     public int getId() { return this.id; }
     public int getArmazenado() { return this.armazenado; }
 
-    public void armazenarEnergia(int energia) { 
+    public int armazenarEnergia(int energia) { 
         if (this.armazenado + energia >= 100) {
-            System.out.println("AVISO - Cilindro " + id + " está cheio. Armazenamento máximo atingido.");
             this.armazenado = 100;
-            return;
+            return 1;
         }
         
         else {
             this.armazenado += energia; 
+            return 0;
         }
     }
 

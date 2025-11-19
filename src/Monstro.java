@@ -17,11 +17,11 @@ public abstract class Monstro {
         if (this instanceof MonstroDoSusto) return "susto";
         else if (this instanceof MonstroDoRiso) return "riso";
         else if (this instanceof MonstroDeSuporte) return "suporte";
-        return null;
+        else throw new IllegalStateException("Tipo de monstro desconhecido.");
     }
 
     // Riso gera mais energia 
-    public double getEficiencia() {
+    public final double getEficiencia() {
         if (this instanceof MonstroDoRiso) {
             return eficiencia;
         }
@@ -34,9 +34,13 @@ public abstract class Monstro {
         else {
             return -1;
         }
-    } 
+    }
 
-    public int coletarEnergiaDaCrianca(Crianca c) {
+    public final double getRawEficiencia() {
+        return eficiencia;
+    }
+
+    public final int coletarEnergiaDaCrianca(Crianca c) {
         if (c == null) return 0;
 
         String tipo = getTipoMonstro(); // “susto” ou “riso”
@@ -48,6 +52,6 @@ public abstract class Monstro {
 
     @Override
     public String toString() {
-        return "Nome: " + nome + " | Eficiencia: " + String.format("%.4f", eficiencia);
+        return "Nome: " + nome + " | Eficiência: " + String.format("%.4f", eficiencia);
     }
 }

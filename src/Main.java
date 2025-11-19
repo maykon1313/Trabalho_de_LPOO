@@ -2,15 +2,18 @@ package src;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Function;
 
-public class Main {
+public final class Main {
     public static void main(String[] args) {
-        Agencia agencia = new Agencia();
-
-        carregarDados(agencia);
-
-        menuInterativo(agencia);
-        
+        try {
+            carregarDados();
+            menuInterativo();
+            salvarDados();
+        } catch (Exception e) {
+            System.err.println("Erro fatal no programa: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public static int mostrarOpcoes(Scanner scanner) {
@@ -36,14 +39,15 @@ public class Main {
             int opcao = validarInt(scanner);
 
             if (opcao < min || opcao > max) {
-                System.out.println("Entrada inválida.");
+                System.out.println("Entrada inválida. Opção deve estar entre " + min + " e " + max + ".");
                 return -1;
             }
             else { return opcao; }
-        }
-
-        catch (Exception e)  {
-            System.out.println("Entrada inválida. Erro:" + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return -1;
+        } catch (Exception e) {
+            System.out.println("Erro inesperado: " + e.getMessage());
             return -1;
         }
     }
@@ -58,11 +62,13 @@ public class Main {
             }
 
             return entrada;
-        }
-
-        catch (Exception e)  {
-            System.out.println("Entrada inválida. Erro:" + e.getMessage());
-            return -1;
+        } catch (InputMismatchException e) {
+            scanner.nextLine(); // clear invalid input
+            throw new IllegalArgumentException("Entrada inválida. Esperado um número inteiro.");
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro inesperado ao validar entrada: " + e.getMessage(), e);
         }
     }
 
@@ -71,26 +77,30 @@ public class Main {
             String entrada = scanner.nextLine();
 
             if (entrada == null || entrada.trim().isEmpty()) {
-                throw new IllegalArgumentException("Entrada inválida.");
+                throw new IllegalArgumentException("Entrada inválida: string vazia ou nula.");
             }
 
             return entrada.trim();
-        }
-
-        catch (Exception e)  {
-            System.out.println("Entrada inválida. Erro:" + e.getMessage());
-            return null;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Erro ao ler entrada de string: " + e.getMessage(), e);
         }
     }
 
     private static int perguntarSimNao(Scanner scanner, String pergunta) {
         System.out.println(pergunta + " (s/n)");
-        String resposta = validarString(scanner);
-        if (resposta == null) return -1;
-        if (resposta.equalsIgnoreCase("s")) return 1;
-        if (resposta.equalsIgnoreCase("n")) return 0;
-        System.out.println("Resposta inválida.");
-        return -1;
+        try {
+            String resposta = validarString(scanner);
+            if (resposta.equalsIgnoreCase("s")) return 1;
+            if (resposta.equalsIgnoreCase("n")) return 0;
+            System.out.println("Resposta inválida.");
+            return -1;
+        } catch (IllegalArgumentException e) {
+            System.out.println("Erro na resposta: " + e.getMessage());
+            return -1;
+        } catch (Exception e) {
+            System.out.println("Erro inesperado: " + e.getMessage());
+            return -1;
+        }
     }
 
     public static int cadastrarNovaEntidade(Scanner scanner) {
@@ -108,125 +118,142 @@ public class Main {
         return validarOpcao(scanner, 1, 6);
     }
 
-    public static int cadastrarCilindro(Scanner scanner, Agencia agencia) {
+    public static int cadastrarCilindro(Scanner scanner) {
         System.out.println("\n=== CADASTRAR CILINDRO ===");
         
         System.out.println("Digite o ID do cilindro: ");
-        int id = validarInt(scanner);
-        if (id == -1) { return -1; }
-
         try {
-            agencia.setCilindro(id);
+            int id = validarInt(scanner);
+
+            boolean idExists = false;
+            for (Cilindro c : Agencia.getCilindros()) {
+                if (c.getId() == id) {
+                    idExists = true;
+                    break;
+                }
+            }
+            if (idExists) {
+                System.out.println("Erro: ID já existe para outro cilindro.");
+                return -1;
+            }
+
+            Agencia.setCilindro(id);
             System.out.println("Cilindro cadastrado com sucesso!");
             return 0;
-        }
-
-        catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Erro ao cadastrar cilindro: " + e.getMessage());
+            return -1;
+        } catch (Exception e) {
+            System.out.println("Erro inesperado ao cadastrar cilindro: " + e.getMessage());
             return -1;
         }
     }
 
-    public static int cadastrarCrianca(Scanner scanner, Agencia agencia) {
+    public static int cadastrarCrianca(Scanner scanner) {
         System.out.println("\n=== CADASTRAR CRIANÇA ===");
 
         System.out.print("Digite o nome da criança: ");
-        String nome = validarString(scanner);
-        if (nome == null) { return -1; }
-
         try {
-            agencia.setCrianca(nome);
+            String nome = validarString(scanner);
+            Agencia.setCrianca(nome);
             System.out.println("Criança cadastrada com sucesso!");
             
-            int resp = perguntarSimNao(scanner, "Deseja associar uma porta para esta criança?");
+            int resp = perguntarSimNao(scanner, "Deseja associar uma porta a esta criança?");
             if (resp == -1) { return -1; }
             if (resp == 1) {
-                agencia.mostrarPortas();
+                Agencia.mostrarPortas();
                 System.out.print("Digite o ID da porta: ");
                 int id = validarInt(scanner);
-                if (id == -1) { return -1; }
                 
-                Porta porta = agencia.getPorta(id);
+                Porta porta = Agencia.getPorta(id);
 
                 if (porta == null) { 
-                    System.out.println("Erro ao procurar a porta.");
+                    System.out.println("Erro: Porta não encontrada.");
                     return -1;
                 }
 
-                Crianca crianca = agencia.getCrianca(agencia.getCriancas().size() - 1);
+                Crianca crianca = Agencia.getCrianca(Agencia.getCriancas().size() - 1);
                 
-                try {
-                    agencia.setPorta(porta, crianca);
-                    System.out.println("Porta cadastrada com sucesso!");
-                    return 0;
-                }
-                catch (Exception e) {
-                    System.out.println("Erro ao cadastrar porta: " + e.getMessage());
-                    return -1;
-                }
+                Agencia.setPorta(porta, crianca);
+                System.out.println("Porta cadastrada com sucesso!");
+                return 0;
             }
             else {
                 System.out.println("Cadastrar porta cancelada.");
             }
             
             return 0;
-        }
-        catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Erro ao cadastrar criança: " + e.getMessage());
+            return -1;
+        } catch (Exception e) {
+            System.out.println("Erro inesperado ao cadastrar criança: " + e.getMessage());
             return -1;
         }
     }
 
-    public static int cadastrarGabinete(Scanner scanner, Agencia agencia) {
+    public static int cadastrarGabinete(Scanner scanner) {
         System.out.println("\n=== CADASTRAR GABINETE ===");
         
         System.out.print("Digite o ID do gabinete: ");
         int id = validarInt(scanner);
         if (id == -1) { return -1; }
 
+        boolean idExists = false;
+        for (Gabinete g : Agencia.getGabinetes()) {
+            if (g.getId() == id) {
+                idExists = true;
+                break;
+            }
+        }
+        if (idExists) {
+            System.out.println("Erro: ID já existe para outro gabinete.");
+            return -1;
+        }
+
         System.out.println("Selecione a porta:");
-        agencia.mostrarPortas();
+        Agencia.mostrarPortas();
 
         System.out.print("Digite o índice da porta: ");
         int indexPorta = validarInt(scanner);
         if (indexPorta == -1) { return -1; }
 
-        Porta porta = agencia.getPorta(indexPorta);
+        Porta porta = Agencia.getPorta(indexPorta);
         if (porta == null) {
             System.out.println("Porta não encontrada.");
             return -1;
         }
 
         System.out.println("Selecione o monstro principal:");
-        agencia.mostrarMonstrosPrincipal();
+        Agencia.mostrarMonstrosPrincipal();
 
         System.out.print("Digite o índice do monstro principal: ");
         int indexMonstroPrincipal = validarInt(scanner);
         if (indexMonstroPrincipal == -1) { return -1; }
 
-        Monstro monstroPrincipal = agencia.getMonstroPrincipal(indexMonstroPrincipal);
+        Monstro monstroPrincipal = Agencia.getMonstroPrincipal(indexMonstroPrincipal);
         if (monstroPrincipal == null) {
             System.out.println("Monstro principal não encontrado.");
             return -1;
         }
 
         System.out.println("Selecione o monstro auxiliar:");
-        agencia.mostrarMonstrosAuxiliar();
+        Agencia.mostrarMonstrosAuxiliar();
 
         System.out.print("Digite o índice do monstro auxiliar: ");
         int indexMonstroAuxiliar = validarInt(scanner);
         if (indexMonstroAuxiliar == -1) { return -1; }
 
-        MonstroDeSuporte monstroAuxiliar = (MonstroDeSuporte) agencia.getMonstroAuxiliar(indexMonstroAuxiliar);
+        MonstroDeSuporte monstroAuxiliar = (MonstroDeSuporte) Agencia.getMonstroAuxiliar(indexMonstroAuxiliar);
 
         System.out.println("Selecione o cilindro:");
-        agencia.mostrarCilindros();
+        Agencia.mostrarCilindros();
 
         System.out.print("Digite o índice do cilindro: ");
         int indexCilindro = validarInt(scanner);
         if (indexCilindro == -1) { return -1; }
 
-        Cilindro cilindro = (Cilindro) agencia.getCilindro(indexCilindro);
+        Cilindro cilindro = (Cilindro) Agencia.getCilindro(indexCilindro);
 
         if (cilindro == null) {
             System.out.println("Cilindro não encontrado.");
@@ -234,7 +261,7 @@ public class Main {
         }
 
         try {
-            agencia.setGabinete(id, porta, monstroPrincipal, monstroAuxiliar, cilindro);
+            Agencia.setGabinete(id, porta, monstroPrincipal, monstroAuxiliar, cilindro);
             System.out.println("Gabinete cadastrado com sucesso!");
             return 0;
         }
@@ -245,7 +272,7 @@ public class Main {
         }
     }
 
-    public static int cadastrarMonstro(Scanner scanner, Agencia agencia) {
+    public static int cadastrarMonstro(Scanner scanner) {
         System.out.println("\n=== CADASTRAR MONSTRO ===");
 
         System.out.println("Digite o nome do monstro: ");
@@ -264,7 +291,7 @@ public class Main {
         String tipoMonstro = tipo == 1 ? "susto" : tipo == 2 ? "riso" : "suporte";
 
         try {
-            agencia.setMonstro(nome, tipoMonstro);
+            Agencia.setMonstro(nome, tipoMonstro);
             System.out.println("Monstro cadastrado com sucesso!");
             return 0;
         }
@@ -275,21 +302,33 @@ public class Main {
         }
     }
 
-    public static int cadastrarPorta(Scanner scanner, Agencia agencia) {
+    public static int cadastrarPorta(Scanner scanner) {
         System.out.println("\n=== CADASTRAR PORTA ===");
 
         System.out.print("Digite o ID da porta: ");
         int id = validarInt(scanner);
         if (id == -1) { return -1; }
 
+        boolean idExists = false;
+        for (Porta p : Agencia.getPortas()) {
+            if (p.getId() == id) {
+                idExists = true;
+                break;
+            }
+        }
+        if (idExists) {
+            System.out.println("Erro: ID já existe para outra porta.");
+            return -1;
+        }
+
         System.out.println("Selecione a criança para associar à porta:");
-        agencia.mostrarCriancas();
+        Agencia.mostrarCriancas();
 
         System.out.print("Digite o índice da criança: ");
         int indexCrianca = validarInt(scanner);
         if (indexCrianca == -1) { return -1; }
 
-        Crianca crianca = agencia.getCrianca(indexCrianca);
+        Crianca crianca = Agencia.getCrianca(indexCrianca);
         if (crianca == null) {
             System.out.println("Criança não encontrada.");
             return -1;
@@ -297,11 +336,11 @@ public class Main {
 
         try {
             if (crianca.getPorta() == null) {
-                agencia.setPorta(id, crianca, false);
+                Agencia.setPorta(id, crianca, false);
             }
 
             else {
-                agencia.setPorta(id, crianca, true);
+                Agencia.setPorta(id, crianca, true);
             }
 
             System.out.println("Porta cadastrada com sucesso!");
@@ -329,15 +368,15 @@ public class Main {
         return validarOpcao(scanner, 1, 6);
     }
 
-    public static int manipularCilindro(Scanner scanner, Agencia agencia) {
+    public static int manipularCilindro(Scanner scanner) {
         System.out.println("\n=== MANIPULAR CILINDRO ===");
 
-        agencia.mostrarCilindros();
+        Agencia.mostrarCilindros();
         System.out.print("Digite o índice do cilindro a ser manipulado: ");
         int indexCilindro = validarInt(scanner);
         if (indexCilindro == -1) { return -1; }
 
-        Cilindro cilindro = agencia.getCilindro(indexCilindro);
+        Cilindro cilindro = Agencia.getCilindro(indexCilindro);
         if (cilindro == null) {
             System.out.println("Cilindro não encontrado.");
             return -1;
@@ -349,6 +388,18 @@ public class Main {
             System.out.print("Digite o novo ID do cilindro: ");
             int novoId = validarInt(scanner);
             if (novoId == -1) { return -1; }
+
+            boolean idExists = false;
+            for (Cilindro c : Agencia.getCilindros()) {
+                if (c.getId() == novoId && c != cilindro) {
+                    idExists = true;
+                    break;
+                }
+            }
+            if (idExists) {
+                System.out.println("Erro: ID já existe para outro cilindro.");
+                return -1;
+            }
 
             try {
                 cilindro.setId(novoId);
@@ -366,15 +417,15 @@ public class Main {
         }
     }
 
-    public static int manipularCrianca(Scanner scanner, Agencia agencia) {
+    public static int manipularCrianca(Scanner scanner) {
         System.out.println("\n=== MANIPULAR CRIANÇA ===");
 
-        agencia.mostrarCriancas();
+        Agencia.mostrarCriancas();
         System.out.print("Digite o índice da criança a ser manipulada: ");
         int indexCrianca = validarInt(scanner);
         if (indexCrianca == -1) { return -1; }
 
-        Crianca crianca = agencia.getCrianca(indexCrianca);
+        Crianca crianca = Agencia.getCrianca(indexCrianca);
         if (crianca == null) {
             System.out.println("Criança não encontrada.");
             return -1;
@@ -403,16 +454,16 @@ public class Main {
         }
     }
 
-    public static int manipularGabinete(Scanner scanner, Agencia agencia) {
+    public static int manipularGabinete(Scanner scanner) {
         System.out.println("\n=== MANIPULAR GABINETE ===");
 
         System.out.println("Selecione o gabinete:");
-        agencia.mostrarGabinetes();
+        Agencia.mostrarGabinetes();
 
         System.out.print("Digite o índice do gabinete: ");
         int gabineteIndex = validarInt(scanner);
 
-        Gabinete gabinete = agencia.getGabinete(gabineteIndex);
+        Gabinete gabinete = Agencia.getGabinete(gabineteIndex);
         if (gabinete == null) {
             System.out.println("Gabinete não encontrado.");
             return -1;
@@ -421,34 +472,46 @@ public class Main {
         int resp = perguntarSimNao(scanner, "Mudar ID do gabinete (atual: " + gabinete.getId() + ")?");
         if (resp == -1) return -1;
         if (resp == 1) {
-            System.out.print("Digite o novo ID do gabinete: ");
-            int novoId = validarInt(scanner);
-            if (novoId == -1) { return -1; }
+        System.out.print("Digite o novo ID do gabinete: ");
+        int novoId = validarInt(scanner);
+        if (novoId == -1) { return -1; }
 
-            try {
-                gabinete.setId(novoId);
-                System.out.println("ID do gabinete alterado com sucesso!");
+        boolean idExists = false;
+        for (Gabinete g : Agencia.getGabinetes()) {
+            if (g.getId() == novoId && g != gabinete) {
+                idExists = true;
+                break;
             }
-
-            catch (Exception e) {
-                System.out.println("Erro ao alterar ID do gabinete: " + e.getMessage());
-                return -1;
-            }
-        } else {
-            System.out.println("Alteração de nome cancelada.");
+        }
+        if (idExists) {
+            System.out.println("Erro: ID já existe para outro gabinete.");
+            return -1;
         }
 
+        try {
+            gabinete.setId(novoId);
+            System.out.println("ID do gabinete alterado com sucesso!");
+        }
+
+        catch (Exception e) {
+            System.out.println("Erro ao alterar ID do gabinete: " + e.getMessage());
+            return -1;
+        }
+        } else {
+            System.out.println("Alteração de ID cancelada.");
+        }        
+        
         resp = perguntarSimNao(scanner, "Mudar a porta do gabinete (atual: " + (gabinete.getPorta() != null ? gabinete.getPorta().getId() : "Nenhuma") + ")?");
         if (resp == -1) return -1;
         if (resp == 1) {
             System.out.println("\nÍndices das portas:");
-            agencia.mostrarPortas();
+            Agencia.mostrarPortas();
 
             System.out.println("Digite o índice: ");
             int index = validarInt(scanner);
             if (index == -1) { return -1; }
 
-            Porta porta = agencia.getPorta(index);
+            Porta porta = Agencia.getPorta(index);
             if (porta == null) {
                 System.out.println("Porta não encontrada.");
                 return -1;
@@ -463,60 +526,60 @@ public class Main {
         resp = perguntarSimNao(scanner, "Mudar o monstro principal do gabinete (atual: " + (gabinete.getMonstroPrincipal() != null ? gabinete.getMonstroPrincipal().getNome() : "Nenhum") + ")?");
         if (resp == -1) return -1;
         if (resp == 1) {
-            System.out.println("\nÍndices dos monstros principal:");
-            agencia.mostrarMonstrosPrincipal();
+            System.out.println("\nÍndices dos monstros principais:");
+            Agencia.mostrarMonstrosPrincipal();
 
             System.out.println("Digite o índice: ");
             int index = validarInt(scanner);
             if (index == -1) { return -1; }
 
-            Monstro monstro = agencia.getMonstroPrincipal(index);
+            Monstro monstro = Agencia.getMonstroPrincipal(index);
             if (monstro == null) {
-                System.out.println("Monstro não encontrada.");
+                System.out.println("Monstro não encontrado.");
                 return -1;
             }
 
             gabinete.setMonstroPrincipal(monstro);
         }
         else {
-            System.out.println("Troca de porta cancelada.");
+            System.out.println("Troca de monstro cancelada.");
         }
 
         resp = perguntarSimNao(scanner, "Mudar o monstro de suporte do gabinete (atual: " + (gabinete.getMonstroAuxiliar() != null ? gabinete.getMonstroAuxiliar().getNome() : "Nenhum") + ")?");
         if (resp == -1) return -1;
         if (resp == 1) {
             System.out.println("\nÍndices dos monstros de suporte:");
-            agencia.mostrarMonstrosAuxiliar();
+            Agencia.mostrarMonstrosAuxiliar();
 
             System.out.println("Digite o índice: ");
             int index = validarInt(scanner);
             if (index == -1) { return -1; }
 
-            MonstroDeSuporte monstro = (MonstroDeSuporte) agencia.getMonstroAuxiliar(index);
+            MonstroDeSuporte monstro = (MonstroDeSuporte) Agencia.getMonstroAuxiliar(index);
             if (monstro == null) {
-                System.out.println("Monstro não encontrada.");
+                System.out.println("Monstro não encontrado.");
                 return -1;
             }
 
             gabinete.setMonstroAuxiliar(monstro);
         }
         else {
-            System.out.println("Troca de porta cancelada.");
+            System.out.println("Troca de monstro cancelada.");
         }
 
         resp = perguntarSimNao(scanner, "Mudar o cilindro do gabinete (atual: " + (gabinete.getCilindro() != null ? gabinete.getCilindro().getId() : "Nenhum") + ")?");
         if (resp == -1) return -1;
         if (resp == 1) {
             System.out.println("\nÍndices dos cilindros:");
-            agencia.mostrarCilindros();
+            Agencia.mostrarCilindros();
 
             System.out.println("Digite o índice: ");
             int index = validarInt(scanner);
             if (index == -1) { return -1; }
 
-            Cilindro cilindro = agencia.getCilindro(index);
+            Cilindro cilindro = Agencia.getCilindro(index);
             if (cilindro == null) {
-                System.out.println("Porta não encontrada.");
+                System.out.println("Cilindro não encontrado.");
                 return -1;
             }
 
@@ -529,7 +592,7 @@ public class Main {
         return 0;
     }
 
-    public static int manipularMonstro(Scanner scanner, Agencia agencia) {
+    public static int manipularMonstro(Scanner scanner) {
         System.out.println("\n=== MANIPULAR MONSTRO ===");
 
         System.out.println("Selecione o tipo de monstro:");
@@ -543,18 +606,18 @@ public class Main {
             System.out.println("Selecione o índice do monstro:");
             
             if (opcao == 0) {
-                agencia.mostrarMonstrosPrincipal();
+                Agencia.mostrarMonstrosPrincipal();
                 
                 int indexMonstro = validarInt(scanner);
                 if (indexMonstro == -1) { return -1; }
                 
-                Monstro monstro = agencia.getMonstroPrincipal(indexMonstro);
+                Monstro monstro = Agencia.getMonstroPrincipal(indexMonstro);
                 if (monstro == null) {
                     System.out.println("Monstro não encontrado.");
                     return -1;
                 }
 
-                System.out.println("Mudar o nome do Mostro para:");
+                System.out.println("Mudar o nome do Monstro para:");
                 String nome = validarString(scanner);
                 if (nome == null) { return -1;}
 
@@ -564,18 +627,18 @@ public class Main {
             }
 
             else if (opcao == 1) {
-                agencia.mostrarMonstrosAuxiliar();
+                Agencia.mostrarMonstrosAuxiliar();
 
                 int indexMonstro = validarInt(scanner);
                 if (indexMonstro == -1) { return -1; }
                 
-                Monstro monstro = agencia.getMonstroAuxiliar(indexMonstro);
+                Monstro monstro = Agencia.getMonstroAuxiliar(indexMonstro);
                 if (monstro == null) {
                     System.out.println("Monstro não encontrado.");
                     return -1;
                 }
 
-                System.out.println("Mudar o nome do Mostro para:");
+                System.out.println("Mudar o nome do Monstro para:");
                 String nome = validarString(scanner);
                 if (nome == null) { return -1;}
 
@@ -591,16 +654,16 @@ public class Main {
         return 0;
     }
 
-    public static int manipularPorta(Scanner scanner, Agencia agencia) {
+    public static int manipularPorta(Scanner scanner) {
         System.out.println("\n=== MANIPULAR PORTA ===");
 
         System.out.println("Índices das portas: ");
-        agencia.mostrarPortas();
+        Agencia.mostrarPortas();
 
         System.out.println("Digite o índice da porta a ser manipulada: ");
         int portaIndex = validarInt(scanner);
 
-        Porta porta = agencia.getPorta(portaIndex);
+        Porta porta = Agencia.getPorta(portaIndex);
         if (porta == null) {
             System.out.println("Porta não encontrada.");
             return -1;
@@ -612,6 +675,18 @@ public class Main {
             System.out.print("Digite o novo ID da porta: ");
             int novoId = validarInt(scanner);
             if (novoId == -1) { return -1; }
+
+            boolean idExists = false;
+            for (Porta p : Agencia.getPortas()) {
+                if (p.getId() == novoId && p != porta) {
+                    idExists = true;
+                    break;
+                }
+            }
+            if (idExists) {
+                System.out.println("Erro: ID já existe para outra porta.");
+                return -1;
+            }
 
             try {
                 porta.setId(novoId);
@@ -630,13 +705,13 @@ public class Main {
         if (resp == -1) return -1;
         if (resp == 1) {
             System.out.println("\nSelecione a nova criança para associar à porta:");
-            agencia.mostrarCriancas();
+            Agencia.mostrarCriancas();
 
             System.out.print("Digite o índice da criança: ");
             int indexCrianca = validarInt(scanner);
             if (indexCrianca == -1) { return -1; }
 
-            Crianca crianca = agencia.getCrianca(indexCrianca);
+            Crianca crianca = Agencia.getCrianca(indexCrianca);
             if (crianca == null) {
                 System.out.println("Criança não encontrada.");
                 return -1;
@@ -658,25 +733,30 @@ public class Main {
         }
     }
 
-    public static void executarGabinete(Scanner scanner, Agencia agencia) {
+    public static void executarGabinete(Scanner scanner) {
         System.out.println("\n=== PROCESSAR GABINETE ===");
 
-        agencia.mostrarGabinetes();
+        Agencia.mostrarGabinetes();
         
         System.out.print("Digite o índice do gabinete a processar: ");
-        int indexGabinete = validarInt(scanner);
-        if (indexGabinete == -1) { return; }
-        
-        Gabinete gabineteProcessar = agencia.getGabinete(indexGabinete);
-        if (gabineteProcessar == null) {
-            System.out.println("Gabinete não encontrado.");
-            return;
+        try {
+            int indexGabinete = validarInt(scanner);
+            
+            Gabinete gabineteProcessar = Agencia.getGabinete(indexGabinete);
+            if (gabineteProcessar == null) {
+                System.out.println("Gabinete não encontrado.");
+                return;
+            }
+            
+            Agencia.processarGabinete(indexGabinete);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            System.out.println("Erro ao processar gabinete: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro inesperado ao processar gabinete: " + e.getMessage());
         }
-        
-        agencia.processarGabinete(indexGabinete);
     }
 
-    public static void menuInterativo(Agencia agencia) {
+    public static void menuInterativo() {
         Scanner scanner = new Scanner(System.in);
         int opcao;
 
@@ -690,11 +770,11 @@ public class Main {
                     if (opcao == -1) { break; }
 
                     else {
-                        if (opcao == 1) { cadastrarCilindro(scanner, agencia); }
-                        else if (opcao == 2) { cadastrarCrianca(scanner, agencia); }
-                        else if (opcao == 3) { cadastrarGabinete(scanner, agencia); }
-                        else if (opcao == 4) { cadastrarMonstro(scanner, agencia); }
-                        else if (opcao == 5) { cadastrarPorta(scanner, agencia); }
+                        if (opcao == 1) { cadastrarCilindro(scanner); }
+                        else if (opcao == 2) { cadastrarCrianca(scanner); }
+                        else if (opcao == 3) { cadastrarGabinete(scanner); }
+                        else if (opcao == 4) { cadastrarMonstro(scanner); }
+                        else if (opcao == 5) { cadastrarPorta(scanner); }
                     }
 
                     break;
@@ -705,25 +785,24 @@ public class Main {
                     if (opcao == -1) { break; }
 
                     else {
-                        if (opcao == 1) { manipularCilindro(scanner, agencia); }
-                        else if (opcao == 2) { manipularCrianca(scanner, agencia); }
-                        else if (opcao == 3) { manipularGabinete(scanner, agencia); }
-                        else if (opcao == 4) { manipularMonstro(scanner, agencia); }
-                        else if (opcao == 5) { manipularPorta(scanner, agencia); }
+                        if (opcao == 1) { manipularCilindro(scanner); }
+                        else if (opcao == 2) { manipularCrianca(scanner); }
+                        else if (opcao == 3) { manipularGabinete(scanner); }
+                        else if (opcao == 4) { manipularMonstro(scanner); }
+                        else if (opcao == 5) { manipularPorta(scanner); }
                     }
                     
                     break;
 
                 case 3:
-                    agencia.mostrarEntidadesCadastradas();
+                    Agencia.mostrarEntidadesCadastradas();
                     break;
 
                 case 4:
-                    executarGabinete(scanner, agencia);
+                    executarGabinete(scanner);
                     break;
 
                 case 5:
-                    salvarDados(agencia);
                     scanner.close();
                     return;
 
@@ -734,79 +813,103 @@ public class Main {
         }
     }
 
-    public static void salvarDados(Agencia agencia) {
+    public static void salvarDados() {
         try (PrintWriter writer = new PrintWriter(new FileWriter("data/agencia.csv"))) {
             // Salvar Criancas
             writer.println("Criancas");
             writer.println("nome,energiaSusto,energiaRiso,portaId");
-            for (Crianca c : agencia.getCriancas()) {
-                writer.println(c.getNome() + "," + c.getEnergia("susto") + "," + c.getEnergia("riso") + "," + (c.getPorta() != null ? c.getPorta().getId() : ""));
+            for (Crianca c : Agencia.getCriancas()) {
+                try {
+                    writer.println(c.getNome() + "," + c.getEnergia("susto") + "," + c.getEnergia("riso") + "," + (c.getPorta() != null ? c.getPorta().getId() : ""));
+                } catch (Exception e) {
+                    System.err.println("Erro ao salvar criança " + c.getNome() + ": " + e.getMessage());
+                }
             }
             writer.println();
 
             // Salvar Monstros Principais
             writer.println("MonstrosPrincipais");
             writer.println("nome,eficiencia,tipo");
-            for (Monstro m : agencia.getMonstrosPrincipal()) {
-                writer.println(m.getNome() + "," + m.getEficiencia() + "," + m.getTipoMonstro());
+            for (Monstro m : Agencia.getMonstrosPrincipal()) {
+                try {
+                    writer.println(m.getNome() + "," + m.getRawEficiencia() + "," + m.getTipoMonstro());
+                } catch (Exception e) {
+                    System.err.println("Erro ao salvar monstro principal " + m.getNome() + ": " + e.getMessage());
+                }
             }
             writer.println();
 
             // Salvar Monstros Auxiliares
             writer.println("MonstrosAuxiliares");
             writer.println("nome,eficiencia,tipo");
-            for (Monstro m : agencia.getMonstrosAuxiliares()) {
-                writer.println(m.getNome() + "," + m.getEficiencia() + "," + m.getTipoMonstro());
+            for (Monstro m : Agencia.getMonstrosAuxiliares()) {
+                try {
+                    writer.println(m.getNome() + "," + m.getRawEficiencia() + "," + m.getTipoMonstro());
+                } catch (Exception e) {
+                    System.err.println("Erro ao salvar monstro auxiliar " + m.getNome() + ": " + e.getMessage());
+                }
             }
             writer.println();
 
             // Salvar Portas
             writer.println("Portas");
             writer.println("id,criancaNome");
-            for (Porta p : agencia.getPortas()) {
-                writer.println(p.getId() + "," + (p.getCrianca() != null ? p.getCrianca().getNome() : ""));
+            for (Porta p : Agencia.getPortas()) {
+                try {
+                    writer.println(p.getId() + "," + (p.getCrianca() != null ? p.getCrianca().getNome() : ""));
+                } catch (Exception e) {
+                    System.err.println("Erro ao salvar porta " + p.getId() + ": " + e.getMessage());
+                }
             }
             writer.println();
 
             // Salvar Cilindros
             writer.println("Cilindros");
             writer.println("id,armazenado");
-            for (Cilindro c : agencia.getCilindros()) {
-                writer.println(c.getId() + "," + c.getArmazenado());
+            for (Cilindro c : Agencia.getCilindros()) {
+                try {
+                    writer.println(c.getId() + "," + c.getArmazenado());
+                } catch (Exception e) {
+                    System.err.println("Erro ao salvar cilindro " + c.getId() + ": " + e.getMessage());
+                }
             }
             writer.println();
 
             // Salvar Gabinetes
             writer.println("Gabinetes");
             writer.println("id,portaId,monstroPrincipalNome,monstroAuxiliarNome,cilindroId");
-            for (Gabinete g : agencia.getGabinetes()) {
-                String portaId = g.getPorta() != null ? String.valueOf(g.getPorta().getId()) : "";
-                String mpNome = g.getMonstroPrincipal() != null ? g.getMonstroPrincipal().getNome() : "";
-                String maNome = g.getMonstroAuxiliar() != null ? g.getMonstroAuxiliar().getNome() : "";
-                String cilindroId = g.getCilindro() != null ? String.valueOf(g.getCilindro().getId()) : "";
-                writer.println(g.getId() + "," + portaId + "," + mpNome + "," + maNome + "," + cilindroId);
+            for (Gabinete g : Agencia.getGabinetes()) {
+                try {
+                    String portaId = g.getPorta() != null ? String.valueOf(g.getPorta().getId()) : "";
+                    String mpNome = g.getMonstroPrincipal() != null ? g.getMonstroPrincipal().getNome() : "";
+                    String maNome = g.getMonstroAuxiliar() != null ? g.getMonstroAuxiliar().getNome() : "";
+                    String cilindroId = g.getCilindro() != null ? String.valueOf(g.getCilindro().getId()) : "";
+                    writer.println(g.getId() + "," + portaId + "," + mpNome + "," + maNome + "," + cilindroId);
+                } catch (Exception e) {
+                    System.err.println("Erro ao salvar gabinete " + g.getId() + ": " + e.getMessage());
+                }
             }
 
             System.out.println("Dados salvos com sucesso em data/agencia.csv");
         } catch (IOException e) {
-            System.out.println("Erro ao salvar dados: " + e.getMessage());
+            System.err.println("Erro ao salvar dados: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Erro inesperado ao salvar dados: " + e.getMessage());
         }
     }
 
-    private static Monstro createMonstro(String nome, String tipo) {
-        if ("susto".equals(tipo)) return new MonstroDoSusto(nome);
-        else if ("riso".equals(tipo)) return new MonstroDoRiso(nome);
-        else if ("suporte".equals(tipo)) return new MonstroDeSuporte(nome);
-        else return null;
-    }
-
-    public static void carregarDados(Agencia agencia) {
+    public static void carregarDados() {
         try (BufferedReader reader = new BufferedReader(new FileReader("data/agencia.csv"))) {
             String line;
             Map<String, Crianca> criancasMap = new HashMap<>();
             Map<String, Monstro> monstrosMap = new HashMap<>();
             Map<Integer, Porta> portasMap = new HashMap<>();
             Map<Integer, Cilindro> cilindrosMap = new HashMap<>();
+            Map<String, Function<String, Monstro>> monstroFactory = Map.of(
+                "susto", MonstroDoSusto::new,
+                "riso", MonstroDoRiso::new,
+                "suporte", MonstroDeSuporte::new
+            );
 
             while ((line = reader.readLine()) != null) {
                 if (line.equals("Criancas")) {
@@ -814,22 +917,30 @@ public class Main {
                     while ((line = reader.readLine()) != null && !line.trim().isEmpty()) {
                         String[] parts = line.split(",");
                         if (parts.length == 4) {
-                            Crianca c = new Crianca(parts[0]);
-                            c.setEnergiaSusto(Integer.parseInt(parts[1]));
-                            c.setEnergiaRiso(Integer.parseInt(parts[2]));
-                            agencia.addCrianca(c);
-                            criancasMap.put(c.getNome(), c);
+                            try {
+                                Crianca c = new Crianca(parts[0]);
+                                c.setEnergiaSusto(Integer.parseInt(parts[1]));
+                                c.setEnergiaRiso(Integer.parseInt(parts[2]));
+                                Agencia.addCrianca(c);
+                                criancasMap.put(c.getNome(), c);
+                            } catch (NumberFormatException e) {
+                                System.err.println("Erro ao parsear energia da criança: " + e.getMessage());
+                            }
                         }
                     }
                 } else if (line.equals("MonstrosPrincipais")) {
                     reader.readLine(); // skip header
                     while ((line = reader.readLine()) != null && !line.trim().isEmpty()) {
                         String[] parts = line.split(",");
-                        Monstro m = createMonstro(parts[0], parts[2]);
-                        if (m != null) {
-                            m.setEficiencia(Double.parseDouble(parts[1]));
-                            agencia.addMonstroPrincipal(m);
-                            monstrosMap.put(m.getNome(), m);
+                        try {
+                            Monstro m = monstroFactory.getOrDefault(parts[2], n -> null).apply(parts[0]); // Lambda para criação de monstro
+                            if (m != null) {
+                                m.setEficiencia(Double.parseDouble(parts[1]));
+                                Agencia.addMonstroPrincipal(m);
+                                monstrosMap.put(m.getNome(), m);
+                            }
+                        } catch (NumberFormatException e) {
+                            System.err.println("Erro ao parsear eficiência do monstro principal: " + e.getMessage());
                         }
                     }
                 } else if (line.equals("MonstrosAuxiliares")) {
@@ -837,11 +948,15 @@ public class Main {
                     while ((line = reader.readLine()) != null && !line.trim().isEmpty()) {
                         String[] parts = line.split(",");
                         if (parts.length == 3) {
-                            Monstro m = createMonstro(parts[0], parts[2]);
-                            if (m != null) {
-                                m.setEficiencia(Double.parseDouble(parts[1]));
-                                agencia.addMonstroAuxiliar(m);
-                                monstrosMap.put(m.getNome(), m);
+                            try {
+                                Monstro m = monstroFactory.getOrDefault(parts[2], n -> null).apply(parts[0]); // Lambda para criação de monstro
+                                if (m != null) {
+                                    m.setEficiencia(Double.parseDouble(parts[1]));
+                                    Agencia.addMonstroAuxiliar(m);
+                                    monstrosMap.put(m.getNome(), m);
+                                }
+                            } catch (NumberFormatException e) {
+                                System.err.println("Erro ao parsear eficiência do monstro auxiliar: " + e.getMessage());
                             }
                         }
                     }
@@ -850,13 +965,17 @@ public class Main {
                     while ((line = reader.readLine()) != null && !line.trim().isEmpty()) {
                         String[] parts = line.split(",");
                         if (parts.length == 2) {
-                            int id = Integer.parseInt(parts[0]);
-                            Crianca c = criancasMap.get(parts[1]);
-                            Porta p = new Porta(id);
-                            p.setCrianca(c);
-                            if (c != null) c.setPorta(p);
-                            agencia.addPorta(p);
-                            portasMap.put(id, p);
+                            try {
+                                int id = Integer.parseInt(parts[0]);
+                                Crianca c = criancasMap.get(parts[1]);
+                                Porta p = new Porta(id);
+                                p.setCrianca(c);
+                                if (c != null) c.setPorta(p);
+                                Agencia.addPorta(p);
+                                portasMap.put(id, p);
+                            } catch (NumberFormatException e) {
+                                System.err.println("Erro ao parsear ID da porta: " + e.getMessage());
+                            }
                         }
                     }
                 } else if (line.equals("Gabinetes")) {
@@ -864,13 +983,19 @@ public class Main {
                     while ((line = reader.readLine()) != null && !line.trim().isEmpty()) {
                         String[] parts = line.split(",");
                         if (parts.length == 5) {
-                            int id = Integer.parseInt(parts[0]);
-                            Porta porta = portasMap.get(Integer.parseInt(parts[1]));
-                            Monstro mp = monstrosMap.get(parts[2]);
-                            MonstroDeSuporte ma = (MonstroDeSuporte) monstrosMap.get(parts[3]);
-                            Cilindro c = cilindrosMap.get(Integer.parseInt(parts[4]));
-                            Gabinete g = new Gabinete(id, porta, mp, ma, c);
-                            agencia.addGabinete(g);
+                            try {
+                                int id = Integer.parseInt(parts[0]);
+                                Porta porta = portasMap.get(Integer.parseInt(parts[1]));
+                                Monstro mp = monstrosMap.get(parts[2]);
+                                MonstroDeSuporte ma = (MonstroDeSuporte) monstrosMap.get(parts[3]);
+                                Cilindro c = cilindrosMap.get(Integer.parseInt(parts[4]));
+                                Gabinete g = new Gabinete(id, porta, mp, ma, c);
+                                Agencia.addGabinete(g);
+                            } catch (NumberFormatException e) {
+                                System.err.println("Erro ao parsear dados do gabinete: " + e.getMessage());
+                            } catch (ClassCastException e) {
+                                System.err.println("Erro: Monstro auxiliar não é do tipo suporte: " + e.getMessage());
+                            }
                         }
                     }
                 } else if (line.equals("Cilindros")) {
@@ -878,18 +1003,26 @@ public class Main {
                     while ((line = reader.readLine()) != null && !line.trim().isEmpty()) {
                         String[] parts = line.split(",");
                         if (parts.length == 2) {
-                            int id = Integer.parseInt(parts[0]);
-                            Cilindro c = new Cilindro(id);
-                            c.setArmazenado(Integer.parseInt(parts[1]));
-                            agencia.addCilindro(c);
-                            cilindrosMap.put(id, c);
+                            try {
+                                int id = Integer.parseInt(parts[0]);
+                                Cilindro c = new Cilindro(id);
+                                c.setArmazenado(Integer.parseInt(parts[1]));
+                                Agencia.addCilindro(c);
+                                cilindrosMap.put(id, c);
+                            } catch (NumberFormatException e) {
+                                System.err.println("Erro ao parsear dados do cilindro: " + e.getMessage());
+                            }
                         }
                     }
                 }
             }
             System.out.println("Dados carregados com sucesso de data/agencia.csv");
+        } catch (FileNotFoundException e) {
+            System.out.println("Arquivo de dados não encontrado: " + e.getMessage() + ". Iniciando com dados vazios.");
         } catch (IOException e) {
-            System.out.println("Erro ao carregar dados: " + e.getMessage());
+            System.err.println("Erro ao carregar dados: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Erro inesperado ao carregar dados: " + e.getMessage());
         }
     }
 }

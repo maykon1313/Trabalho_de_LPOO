@@ -1,6 +1,6 @@
 package src;
 
-public class Porta {
+public final class Porta {
     private int id;
     private Crianca cotocos;
 
