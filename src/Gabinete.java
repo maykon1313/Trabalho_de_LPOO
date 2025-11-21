@@ -5,7 +5,7 @@ public final class Gabinete {
     private Porta abracadabra;
     private Monstro monstroPrincipal;
     private MonstroDeSuporte monstroAuxiliar;
-    private Cilindro cilindro;
+    private Cilindro cilindro; // Atributos
 
     public Gabinete(int id, Porta abracadabra, Monstro monstroPrincipal, MonstroDeSuporte monstroAuxiliar, Cilindro cilindro) {
         this.id = id;
@@ -13,7 +13,7 @@ public final class Gabinete {
         this.monstroPrincipal = monstroPrincipal;
         this.monstroAuxiliar = monstroAuxiliar;
         this.cilindro = cilindro;
-    }
+    } // Contrutor
 
     public void setId(int id) { this.id = id; }
     public void setPorta(Porta abracadabra) { this.abracadabra = abracadabra; }
@@ -25,12 +25,12 @@ public final class Gabinete {
     public Porta getPorta() { return this.abracadabra; }
     public Monstro getMonstroPrincipal() { return this.monstroPrincipal; }
     public MonstroDeSuporte getMonstroAuxiliar() { return this.monstroAuxiliar; }
-    public Cilindro getCilindro() { return this.cilindro; }
+    public Cilindro getCilindro() { return this.cilindro; } // Métodos get e set
 
     @Override
     public String toString() { 
         return "Gabinete ID: " + id + ", Porta: " + abracadabra + ", Monstro Principal: " + monstroPrincipal + ", Monstro Auxiliar: " + monstroAuxiliar + ", Cilindro: " + cilindro; 
-    }
+    } // Sobrescrita do Método da class Object
 
     public static void processarEnergia(Cilindro c, Porta p, Monstro m_principal, MonstroDeSuporte m_auxiliar) throws IllegalArgumentException, IllegalStateException {
         if (c == null) {
@@ -72,5 +72,5 @@ public final class Gabinete {
         else {
             System.out.println("Energia adicionada ao Cilindro (" + c.getId() + "): " + energia_processada);
         }
-    }
+    } // Método para processar a energia
 }

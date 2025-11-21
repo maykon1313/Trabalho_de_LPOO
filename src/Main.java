@@ -14,7 +14,7 @@ public final class Main {
             System.err.println("Erro fatal no programa: " + e.getMessage());
             e.printStackTrace();
         }
-    }
+    } // Método principal da Main
 
     public static int mostrarOpcoes(Scanner scanner) {
         System.out.println("\n=== MENU MONSTROS S.A. ===");
@@ -32,7 +32,7 @@ public final class Main {
 
         if (opcao < 1 || opcao > 5) { return -1; }
         else { return opcao; }
-    }
+    } // Menu para selecionar a ação inicial
 
     public static int validarOpcao(Scanner scanner, int min, int max) {
         try {
@@ -50,7 +50,7 @@ public final class Main {
             System.out.println("Erro inesperado: " + e.getMessage());
             return -1;
         }
-    }
+    } // Método para validar um int no intervalo definido
 
     public static int validarInt(Scanner scanner) {
         try {
@@ -70,7 +70,7 @@ public final class Main {
         } catch (Exception e) {
             throw new RuntimeException("Erro inesperado ao validar entrada: " + e.getMessage(), e);
         }
-    }
+    } // Método para validar um int não negativo
 
     public static String validarString(Scanner scanner) {
         try {
@@ -84,7 +84,7 @@ public final class Main {
         } catch (Exception e) {
             throw new IllegalArgumentException("Erro ao ler entrada de string: " + e.getMessage(), e);
         }
-    }
+    } // Método para validar uma String
 
     private static int perguntarSimNao(Scanner scanner, String pergunta) {
         System.out.println(pergunta + " (s/n)");
@@ -101,7 +101,7 @@ public final class Main {
             System.out.println("Erro inesperado: " + e.getMessage());
             return -1;
         }
-    }
+    } // Método para validar um pargunta de sim ou não 
 
     public static int cadastrarNovaEntidade(Scanner scanner) {
         System.out.println("\n=== MENU CADASTRAR NOVA ENTIDADE ===");
@@ -116,7 +116,7 @@ public final class Main {
         System.out.print("Escolha uma opção: ");
 
         return validarOpcao(scanner, 1, 6);
-    }
+    } // Menu para cadastrar nova entidade
 
     public static int cadastrarCilindro(Scanner scanner) {
         System.out.println("\n=== CADASTRAR CILINDRO ===");
@@ -366,7 +366,7 @@ public final class Main {
         System.out.print("Escolha uma opção: ");
 
         return validarOpcao(scanner, 1, 6);
-    }
+    } // Menu para manipular as entidades já cadastradas
 
     public static int manipularCilindro(Scanner scanner) {
         System.out.println("\n=== MANIPULAR CILINDRO ===");
@@ -754,7 +754,7 @@ public final class Main {
         } catch (Exception e) {
             System.out.println("Erro inesperado ao processar gabinete: " + e.getMessage());
         }
-    }
+    } // Método para chamar a função processarGabinete para o gabinete escolhido
 
     public static void menuInterativo() {
         Scanner scanner = new Scanner(System.in);
@@ -811,7 +811,7 @@ public final class Main {
                     break;
             }
         }
-    }
+    } // Menu interativo
 
     public static void salvarDados() {
         try (PrintWriter writer = new PrintWriter(new FileWriter("data/agencia.csv"))) {
@@ -896,7 +896,7 @@ public final class Main {
         } catch (Exception e) {
             System.err.println("Erro inesperado ao salvar dados: " + e.getMessage());
         }
-    }
+    } // Método para salvar os dados
 
     public static void carregarDados() {
         try (BufferedReader reader = new BufferedReader(new FileReader("data/agencia.csv"))) {
@@ -1024,5 +1024,5 @@ public final class Main {
         } catch (Exception e) {
             System.err.println("Erro inesperado ao carregar dados: " + e.getMessage());
         }
-    }
+    } // Método para carregar os dados
 }

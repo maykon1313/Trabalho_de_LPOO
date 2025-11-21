@@ -148,7 +148,6 @@ public final class Agencia {
         cilindros.add(cilindro);
     }
 
-
     public static void processarGabinete(int indexGabinete) {
         Gabinete g = getGabinete(indexGabinete);
         if (g == null) {
